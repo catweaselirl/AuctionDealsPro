@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Premium - GOVDeals Pro</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .nav-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-tabs {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-tabs li {
+            margin: 0 15px;
+        }
+
+        .nav-tabs li a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs li a:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs li a.active {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .content {
+            text-align: center;
+            max-width: 800px;
+            margin: 120px auto 40px;
+            padding: 0 20px;
+        }
+
+        .payment-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .price-tag {
+            font-size: 3em;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .price-tag small {
+            font-size: 0.4em;
+            color: #666;
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 30px auto;
+            max-width: 400px;
+        }
+
+        .features-list li {
+            margin: 15px 0;
+            color: #34495e;
+            font-size: 1.1em;
+        }
+
+        #payment-form {
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .form-row {
+            margin: 15px 0;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        #card-element {
+            background-color: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        #card-errors {
+            color: var(--accent-color);
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        .submit-button {
+            background: var(--secondary-color);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            background: #2980b9;
+        }
+
+        .stripe-badge {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .stripe-badge img {
+            height: 20px;
+            vertical-align: middle;
+        }
+    </style>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <nav class="nav-container">
+        <ul class="nav-tabs">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="notifications.html">My Notifications</a></li>
+            <li><a href="settings.html">Settings</a></li>
+            <li><a href="premium.html" class="active">Get Premium</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="payment-card">
+            <h1>Upgrade to Premium</h1>
+            <div class="price-tag">
+                $5 <small>/month</small>
+            </div>
+            <ul class="features-list">
+                <li>✓ Unlocks daily notification checks</li>
+                <li>✓ Unlocks SMS notifications</li>
+                <li>✓ Priority support</li>
+            </ul>
+            <form id="payment-form">
+                <div class="form-row">
+                    <label for="card-element">Credit or debit card</label>
+                    <div id="card-element"></div>
+                    <div id="card-errors" role="alert"></div>
+                </div>
+                <button class="submit-button">Subscribe Now</button>
+            </form>
+            <div class="stripe-badge">
+                <span>Secured by</span>
+                <img src="https://stripe.com/img/v3/home/twitter.svg" alt="Stripe" />
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stripe = Stripe('your_publishable_key');
+        const elements = stripe.elements();
+        const card = elements.create('card');
+        card.mount('#card-element');
+
+        card.addEventListener('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const {token, error} = await stripe.createToken(card);
+
+            if (error) {
+                const errorElement = document.getElementById('card-errors');
+                errorElement.textContent = error.message;
+            } else {
+                stripeTokenHandler(token);
+            }
+        });
+
+        function stripeTokenHandler(token) {
+            const form = document.getElementById('payment-form');
+            const hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+    </script>
+</body>
+</html>
